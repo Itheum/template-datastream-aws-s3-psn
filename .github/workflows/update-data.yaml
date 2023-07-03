@@ -1,0 +1,42 @@
+name: Data_Auto_Update_Tool
+
+env:
+  S3_KEY_ID: ${{ secrets.S3_KEY_ID }}
+  S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
+  S3_BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
+  NPSSO: ${{ secrets.NPSSO }}
+on:
+  schedule:
+    - cron: "30 23 * * *"
+
+  push:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+          cache: "pip"
+      - run: |
+          pip install -r requirements.txt
+
+      - name: Data generating script
+        run: |
+          python main.py
+
+      - name: Upload data to S3
+        uses: shallwefootball/s3-upload-action@master
+        id: S3
+        with:
+          aws_key_id: ${{ env.S3_KEY_ID }}
+          aws_secret_access_key: ${{ env.S3_ACCESS_KEY }}
+          aws_bucket: ${{ env.S3_BUCKET_NAME }}
+          source_dir: output
+          destination_dir: ""

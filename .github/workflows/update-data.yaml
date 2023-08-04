@@ -4,6 +4,7 @@ env:
   S3_KEY_ID: ${{ secrets.S3_KEY_ID }}
   S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
   S3_BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
+  S3_OUTPUT_FOLDER: ${{ secrets.S3_OUTPUT_FOLDER || '' }}
   NPSSO: ${{ secrets.NPSSO }}
 on:
   schedule:
@@ -39,4 +40,4 @@ jobs:
           aws_secret_access_key: ${{ env.S3_ACCESS_KEY }}
           aws_bucket: ${{ env.S3_BUCKET_NAME }}
           source_dir: output
-          destination_dir: ""
+          destination_dir: ${{ env.S3_OUTPUT_FOLDER }}
